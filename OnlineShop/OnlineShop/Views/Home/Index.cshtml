@@ -1,10 +1,11 @@
-﻿
+﻿@using Model.Dao;
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
     var slides = (List<Model.EF.Slide>)ViewBag.Slides;
     var listnewProducts = (List<Model.EF.Product>)ViewBag.ListNewProducts;
     var listFeatureProducts = (List<Model.EF.Product>)ViewBag.ListFeatureProducts;
 }
+
 <!-- SECTION -->
 <div class="section">
     <!-- container -->
@@ -117,11 +118,10 @@
                                             }
                                             <h4>@(item.Status? "Còn hàng":"Hết hàng")</h4>
                                             <div class="product-rating">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
+                                                @for (int i = 0; i < (new RatingDao().SumStar(item.ID)); i++)
+                                                {
+                                                    <i class="fa fa-star"></i>
+                                                }
                                             </div>
                                         </div>
                                         <div class="add-to-cart">
@@ -167,10 +167,10 @@
                                 <!-- product -->
                                 @foreach (var item in listFeatureProducts)
                                 {
-                                    var url = "/chi-tiet/" + item.MetaTitle + "-" + item.ID;
+                                   
                                     <div class="product">
                                         <div class="product-img">
-                                            <a href="@url"><img src="@item.Image" height="280" class="w-100" alt="@item.Name"></a>
+                                            <a href="#"><img src="@item.Image" height="280" class="w-100" alt="@item.Name"></a>
                                         </div>
                                         <div class="product-body" style="height:150px">
                                             <h3 class="product-name"><a href="#">@item.Name</a></h3>
@@ -185,11 +185,10 @@
                                             }
                                             <h4>@(item.Status? "Còn hàng":"Hết hàng")</h4>
                                             <div class="product-rating">
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
-                                                <i class="fa fa-star"></i>
+                                                @for (int i = 0; i < (new RatingDao().SumStar(item.ID)); i++)
+                                                {
+                                                    <i class="fa fa-star"></i>
+                                                }
                                             </div>
                                         </div>
                                         <div class="add-to-cart">

@@ -31,6 +31,7 @@ namespace OnlineShop.Controllers
             {
                 data = data,
                 status = true
+
             }, JsonRequestBehavior.AllowGet);
         }
         public ActionResult Category(long cateId, int page = 1, int pageSize = 8)
@@ -50,6 +51,7 @@ namespace OnlineShop.Controllers
             ViewBag.Prev = page - 1;
             ViewBag.Last = maxPage;
             ViewBag.First = 1;
+            ViewBag.Star = new RatingDao().Star();
             return View(model);
         }
         public ActionResult Search(string keyword, int page = 1, int pageSize = 10)
@@ -68,10 +70,11 @@ namespace OnlineShop.Controllers
             ViewBag.Prev = page - 1;
             ViewBag.Last = maxPage;
             ViewBag.First = 1;
+            ViewBag.Star = new RatingDao().Star();
             return View(model);
         }
-        [OutputCache(Duration = int.MaxValue, VaryByParam = "id")]
-        public ActionResult Detail(Rating rating, LoginModel model, long id, int page = 1, int pageSize = 3)
+        
+        public ActionResult Detail(long id, int page = 1, int pageSize = 3)
         {
             int totalRecord = 0;
             var product = new ProductDao().ViewDetail(id);
@@ -98,15 +101,25 @@ namespace OnlineShop.Controllers
             ViewBag.Prev = page - 1;
             ViewBag.Last = maxPage;
             ViewBag.First = 1;
-            //add comment
-            /*var user = new UserDao().GetById(model.UserName);
-            var userSession = new UserLogin();
-            userSession.UserID = user.ID;
-            userSession.Name = user.Name;
-            Session.Add(CommonConstants.USER_SESSION, userSession); */
-            var dao = new RatingDao();
-            long ratingid = dao.Insert(rating, id, 2);
+            ViewBag.Star = new RatingDao().Star();
+            Session["ID"] = id;
             return View(product);
+        }
+        public JsonResult Rating(string comment, int sao)
+        {
+            long id = (long)Session["ID"];
+            var product = new ProductDao().ViewDetail(id);
+            ViewBag.Star = new RatingDao().Star();
+            var usersession = (UserLogin)Session[OnlineShop.Common.CommonConstants.USER_SESSION];
+            Rating rating = new Rating();
+            rating.Comment = comment;
+            rating.Rate = sao;
+            long ratingid = new RatingDao().Insert(rating, id, usersession.UserID);
+            return Json(new
+            {
+                MetaTitle = product.MetaTitle,
+                id = product.ID,
+            });            
         }
         public ActionResult Store(int page = 1, int pageSize = 9)
         {
@@ -125,6 +138,7 @@ namespace OnlineShop.Controllers
             ViewBag.Prev = page - 1;
             ViewBag.Last = maxPage;
             ViewBag.First = 1;
+            ViewBag.Star = new RatingDao().Star();
             return View(product);
         }
         [HttpPost]
@@ -149,6 +163,7 @@ namespace OnlineShop.Controllers
             ViewBag.Prev = page - 1;
             ViewBag.Last = maxPage;
             ViewBag.First = 1;
+            ViewBag.Star = new RatingDao().Star();
             return View();
         }
     }

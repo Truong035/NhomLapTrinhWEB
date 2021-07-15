@@ -6,7 +6,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
     var category = (Model.EF.ProductCategory)ViewBag.Category;
     var relatedProducts = (List<Model.EF.Product>)ViewBag.RelatedProducts;
-  var showcomment = (List<Model.ViewModel.RatingModel>)ViewBag.ShowComment;
+    var showcomment= (List<Model.ViewModel.RatingModel>)ViewBag.ShowComment;
+
+  
+}
+@using Model.Dao;
+@section jsFooter{
+    <script src="/Assets/client/js/controller/ratingcontroller.js"></script>    
 }
 <!-- BREADCRUMB -->
 <div id="breadcrumb" class="section">
@@ -68,11 +74,11 @@
                     <h2 class="product-name">@Model.Name</h2>
                     <div>
                         <div class="product-rating">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-o"></i>
+                            @for (int i = 0; i < (new RatingDao().SumStar(Model.ID)); i++)
+                            {
+                                <i class="fa fa-star"></i>
+                            }
+                        
                         </div>
                     </div>
                     <div>
@@ -85,9 +91,9 @@
                         {
                             <h3 class="product-price"> Giá: <span>@(Model.Price.HasValue? Model.Price.Value.ToString("N0"):"Liên hệ")</span> VND</h3>
                         }
-                        <span class="product-available">@(Model.Status? "Còn hàng":"Hết hàng")</span>
+                        <h3 class="product-available">@(Model.Status? "Còn hàng":"Hết hàng")</h3>
                     </div>
-                    <p>@Model.Description</p>
+                    <p>@Html.Raw(Model.Description)</p>
                     <div class="add-to-cart">
                         <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i><a href="/them-gio-hang?productId=@Model.ID&quantity=1">Thêm vào giỏ hàng</a></button>
                     </div>
@@ -116,7 +122,7 @@
                         <div id="tab1" class="tab-pane fade in active">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <p>@Model.Detail</p>
+                                    <p>@Html.Raw(Model.Detail)</p>
                                 </div>
                             </div>
                         </div>
@@ -283,46 +289,43 @@
                                 <div class="col-md-3">
                                     <div id="review-form">
                                         <form class="review-form">
-                                            @*@using (Html.BeginForm("Detail", "Product", FormMethod.Post))
-                                                {
-                                                    @Html.AntiForgeryToken()
+                                            @{ var session = (UserLogin)Session[OnlineShop.Common.CommonConstants.USER_SESSION]; }
+                                            @if (session != null)
+                                            {
+                                                <input class="input" type="text" placeholder="Your Name" value="@session.Name">
+                                                <input class="input" type="email" placeholder="Your Email" value="@session.Email">
+                                                <textarea class="input" placeholder="Your Review" id="review" name="review"></textarea>
+                                                <div class="input-rating">
+                                                    <span>Your Rating: </span>
+                                                    <div class="stars">
+                                                        <input id="star5" name="rating" class="txtsao" value="5" type="radio"><label for="star5"></label>
+                                                        <input id="star4" name="rating" class="txtsao" value="4" type="radio"><label for="star4"></label>
+                                                        <input id="star3" name="rating" class="txtsao" value="3" type="radio"><label for="star3"></label>
+                                                        <input id="star2" name="rating" class="txtsao" value="2" type="radio"><label for="star2"></label>
+                                                        <input id="star1" name="rating" class="txtsao" value="1" type="radio"><label for="star1"></label>
 
-                                                    <div class="form-horizontal">
-                                                        <hr />
-                                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                                        <div class="form-group row">
-                                                            @Html.LabelFor(model => R, htmlAttributes: new { @class = "control-label col-md-2" })
-                                                            @Html.TextBoxFor(model => model.UserName, new { htmlAttributes = new { @class = "form-control" } })
-                                                            @Html.ValidationMessageFor(model => model.UserName, "", new { @class = "text-danger" })
-                                                        </div>
-
-                                                        <div class="form-group row">
-                                                            @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-2" })
-                                                            @Html.CheckBoxFor(model => model.Status, new { htmlAttributes = new { @class = "form-control" } })
-                                                            @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <div class="col-md-offset-2 col-md-10">
-                                                                <button>Thêm</button>
-                                                            </div>
-                                                        </div>
                                                     </div>
-                                                }*@
-                                            <input class="input" type="text" placeholder="Your Name">
-                                            <input class="input" type="email" placeholder="Your Email">
-                                            <textarea class="input" placeholder="Your Review"></textarea>
-                                            <div class="input-rating">
-                                                <span>Your Rating: </span>
-                                                <div class="stars">
-                                                    <input id="star5" name="rating" value="5" type="radio"><label for="star5"></label>
-                                                    <input id="star4" name="rating" value="4" type="radio"><label for="star4"></label>
-                                                    <input id="star3" name="rating" value="3" type="radio"><label for="star3"></label>
-                                                    <input id="star2" name="rating" value="2" type="radio"><label for="star2"></label>
-                                                    <input id="star1" name="rating" value="1" type="radio"><label for="star1"></label>
                                                 </div>
-                                            </div>
-                                            <button class="primary-btn">Save Comment</button>
+                                            }
+                                            else
+                                            {
+                                                <input class="input" type="text" placeholder="Your Name">
+                                                <input class="input" type="email" placeholder="Your Email">
+                                                <textarea class="input" placeholder="Your Review"></textarea>
+                                                <div class="input-rating">
+                                                    <span>Your Rating: </span>
+                                                    <div class="stars">
+
+                                                        <input id="star5" name="rating" value="5" type="radio"><label for="star5"></label>
+                                                        <input id="star4" name="rating" value="4" type="radio"><label for="star4"></label>
+                                                        <input id="star3" name="rating" value="3" type="radio"><label for="star3"></label>
+                                                        <input id="star2" name="rating" value="2" type="radio"><label for="star2"></label>
+                                                        <input id="star1" name="rating" value="1" type="radio"><label for="star1"></label>
+                                                    </div>
+                                                </div>
+                                            }
+
+                                            <button id="btnsave" class="btn">Save Comment</button>
                                         </form>
                                     </div>
                                 </div>
@@ -365,12 +368,18 @@
                                     var url = "/chi-tiet/" + item.MetaTitle + "-" + item.ID;
                                     <div class="product">
                                         <div class="product-img">
-                                            <a href="@url"><img src="@item.Image" class="w-100" alt=""></a>
+                                            <a href="@url"><img src="@item.Image"  class="w-100" alt=""></a>
                                         </div>
-                                        <div class="product-body">
+                                        <div class="product-body" style="height:200px">
                                             <h3 class="product-name"><a href="#">@item.Name</a></h3>
                                             <h4 class="product-price">@(item.Price.HasValue? item.Price.Value.ToString("N0"):"Liên hệ")></h4>
                                             <h4>@(item.Status? "Còn hàng":"Hết hàng")</h4>
+                                            <div class="product-rating">
+                                                @for (int i = 0; i < (new RatingDao().SumStar(item.ID)); i++)
+                                                {
+                                                    <i class="fa fa-star"></i>
+                                                }
+                                            </div>
                                         </div>
                                         <div class="add-to-cart">
                                             <h4 class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i><a href="/them-gio-hang?productId=@item.ID&quantity=1">Thêm vào giỏ hàng</a></h4>

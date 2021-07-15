@@ -105,6 +105,7 @@
     <Compile Include="ViewModel\OrderViewModel.cs" />
     <Compile Include="ViewModel\ProductViewModel.cs" />
     <Compile Include="ViewModel\RatingModel.cs" />
+    <Compile Include="ViewModel\StarModel.cs" />
     <Compile Include="ViewModel\StatisticalModel.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -141,10 +141,10 @@ namespace OnlineShop.Controllers
             //string accessKey = "0b0X3Io8pP8F21Y2";
             //string serectkey = "SWjXF22dGhOxZU3waGTdeSECfX6LmhaA";
             //string orderInfo = "Đơn Hàng Mới";
-            string returnUrl = "https://localhost:44398/thanh-toan";
-            string notifyurl = "https://localhost:44398/hoan-thanh";
+            string returnUrl = "https://localhost:44393/thanh-toan";
+            string notifyurl = "https://localhost:44393/hoan-thanh";
 
-            string amount = "1000" ;
+            string amount = cost ;
             string orderid = Guid.NewGuid().ToString();
             string requestId = Guid.NewGuid().ToString();
             string extraData = "";
@@ -268,6 +268,7 @@ namespace OnlineShop.Controllers
             long productId = 0;
             var order = (Order) Session["odert"];
             var id = new OrderDao().Insert(order);
+            string content = System.IO.File.ReadAllText(Server.MapPath("~/Assets/client/template/neworder.html"));
             foreach (var item in cart)
             {
                 var orderDetail = new OrderDetail();
@@ -278,20 +279,21 @@ namespace OnlineShop.Controllers
                detailDao.Insert(orderDetail);
                 productId = orderDetail.ProductID;
                 total += (item.Product.Price.GetValueOrDefault(0) * item.Quantity);
+                content = System.IO.File.ReadAllText(Server.MapPath("~/Assets/client/template/neworder.html"));
+                content = content.Replace("{{CustomerName}}", order.ShipName);
+                // m lam  ko ddc ha
+                content = content.Replace("{{ProductId}}", item.Product.Name);
+                content = content.Replace("{{Phone}}", order.ShipMobile);
+                content = content.Replace("{{Email}}", order.ShipEmail);
+                content = content.Replace("{{Address}}", order.ShipAddress);
+                content = content.Replace("{{Total}}", total.ToString("N0"));
+                var toEmail = ConfigurationManager.AppSettings["ToEmailAddress"].ToString();
+                //  string toEmail = "quangtruong112000.93@gmail.com";
+                new MailHelper().SendEmail(order.ShipEmail, "Đơn hàng mới từ OnlineShop", content);
+                new MailHelper().SendEmail(toEmail, "Đơn hàng mới từ OnlineShop", content);
 
             }
-            string content = System.IO.File.ReadAllText(Server.MapPath("~/Assets/client/template/neworder.html"));
-
-            content = content.Replace("{{CustomerName}}", order.ShipName);
-            content = content.Replace("{{ProductId}}", productId.ToString("N0"));
-            content = content.Replace("{{Phone}}", order.ShipMobile);
-            content = content.Replace("{{Email}}", order.ShipEmail);
-            content = content.Replace("{{Address}}", order.ShipAddress);
-            content = content.Replace("{{Total}}", total.ToString("N0"));
-          var toEmail = ConfigurationManager.AppSettings["ToEmailAddress"].ToString();
-        //   string toEmail = "quangtruong112000.93@gmail.com";
-            new MailHelper().SendEmail(order.ShipEmail, "Đơn hàng mới từ OnlineShop", content);
-            new MailHelper().SendEmail(toEmail, "Đơn hàng mới từ OnlineShop", content);
+        
             Session[CartSession]=null;
             Session["odert"]=null;
             return View();

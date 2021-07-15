@@ -397,7 +397,6 @@ namespace OnlineShop.Controllers
         {
             var loginInfo = await AuthenticationManager.GetExternalLoginInfoAsync();
 
-
             if (loginInfo == null)
             {
                 return RedirectToAction("Index", "Home");

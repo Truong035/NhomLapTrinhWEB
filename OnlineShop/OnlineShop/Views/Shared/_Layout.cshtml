@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
+    <link rel="icon" href="/Assets/img/icon.ico" type="image/x-icon" />
     <title>@ViewBag.Title</title>
     <meta name="keywords" content="@ViewBag.Keywords" />
     <meta name="description" content="@ViewBag.Descriptions" />
@@ -39,22 +39,21 @@
             overflow: hidden;
             left: 0;
             right: 0;
-            position: fixed;    
+            position: fixed;
             z-index: 100;
             overflow: hidden;
             text-align: center;
             background-color: rgb(68 65 65 / 0.78);
         }
+
         #dialog1 {
             width: 30%;
             height: 30%;
             top: 0;
             bottom: 0;
             left: 0;
-        
             position: fixed;
             z-index: 100;
- 
         }
     </style>
 </head>
@@ -229,7 +228,7 @@
                         success: function (data) {
                             if (data.code == 100) {
                                 alert("Đăng nhập thành công")
-                                // window.location = "/Home/Index"
+                                window.location = "/Home/Index"
                             }
                             else if (data.code == 600) {
                                 window.location = "/gio-hang"

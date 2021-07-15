@@ -87,7 +87,7 @@
                         }
                         <span class="product-available">@(Model.Status? "Còn hàng":"Hết hàng")</span>
                     </div>
-                    <p>@Model.Description</p>
+                    <p>@Html.Raw(Model.Description)</p>
                     <div class="add-to-cart">
                         <button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i><a href="/them-gio-hang?productId=@Model.ID&quantity=1">Thêm vào giỏ hàng</a></button>
                     </div>
@@ -116,7 +116,7 @@
                         <div id="tab1" class="tab-pane fade in active">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <p>@Model.Detail</p>
+                                    <p>@Html.Raw(Model.Detail)</p>
                                 </div>
                             </div>
                         </div>

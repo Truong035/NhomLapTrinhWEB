@@ -90,6 +90,62 @@ namespace Model.Dao
                 return average;
             }
         }
+
+        public List<StarModel> Star()
+        {
+            var model = (from a in db.Products
+                         join b in db.Ratings
+                         on a.ID equals b.ProductId
+                         select new
+                         {
+                             ProductId = a.ID,
+                             Rate = b.Rate,
+                             CommentedOn = b.CommentedOn,
+                         }).AsEnumerable().Select(x => new StarModel()
+                         {
+                             ProductId = x.ProductId,
+                             Rate = x.Rate,
+                             CommentedOn = x.CommentedOn
+                         });
+            var model1 = new List<StarModel>();
+            foreach (var item in model.ToList())
+            {
+                int cout = 0;
+                foreach (var item1 in model1)
+                {
+                    if (item1.ProductId == item.ProductId)
+                    {
+                        item1.Star += item.Rate;
+                        item1.amount++;
+                        cout++;
+                    }
+                }
+                if (cout == 0)
+                {
+                    model1.Add(item);
+                }
+            }
+            var model2 = new List<StarModel>();
+            foreach (var item1 in model1.ToList())
+            {
+                int dem = 0;
+                foreach (var item2 in model2.ToList())
+                {
+                    if (item1.ProductId == item2.ProductId)
+                    {
+                        item2.SumStar = item1.Star / item1.amount;
+                        dem++;
+                    }
+                }
+                if (dem == 0)
+                {
+                    model2.Add(item1);
+                }
+            }
+            model2.OrderByDescending(x => x.CommentedOn);
+            return model2.ToList();
+        }
+
         public float Sum5Star(long productid)
         {
             int sumstart = 0;

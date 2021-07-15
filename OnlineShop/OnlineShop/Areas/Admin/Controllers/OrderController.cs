@@ -26,7 +26,7 @@ namespace OnlineShop.Areas.Admin.Controllers
                 tinhtrangs.Add(tinhtrang);
                 tinhtrang = new tinhtrang();
                 tinhtrang.ID = 1;
-                tinhtrang.Name = "Dang đóng gói";
+                tinhtrang.Name = "Đang đóng gói";
                 tinhtrangs.Add(tinhtrang);
                 tinhtrang = new tinhtrang();
                 tinhtrang.ID = 2;
@@ -39,6 +39,20 @@ namespace OnlineShop.Areas.Admin.Controllers
                 return tinhtrangs;
 
             }
+        }
+        public ActionResult AddIteam(long id)
+        {
+         var db=new   OnlineShopDbContext();
+          long id1=(long)Session["idorder"];
+            OrderDetail order = new OrderDetail();
+            order.OrderID = id1;
+            order.Price = db.Products.Find(id).Price;
+            order.Quantity = 1;
+            order.ProductID = id;
+            db.OrderDetails.Add(order);
+            db.SaveChanges();
+
+            return RedirectToAction("Edit/" + id1);
         }
         public ActionResult Index(string searchString, int page = 1, int pageSize = 5)
         {
@@ -54,7 +68,12 @@ namespace OnlineShop.Areas.Admin.Controllers
 
         }
 
+        public ActionResult SanPham(long id)
+        {
+            Session["idorder"] = id;
 
+            return View(new OnlineShopDbContext().Products.Where(x=>x.Quantity>0).ToList());
+        }
         public ActionResult Edit(int id)
         {
 
@@ -84,7 +103,44 @@ namespace OnlineShop.Areas.Admin.Controllers
             {
 
                 var dao = new OrderDao();
-                var order1 = new OnlineShopDbContext().Orders.Find(order.ID);
+            var db  = new OnlineShopDbContext();
+             if(order.Status == 4){
+                    foreach (var item in  db.OrderDetails.Where(x=>x.OrderID==order.ID))
+                    {
+                        try
+                        {
+
+                            if (db.Products.Find(item.ProductID).Quantity-item.Quantity<0)
+                            {
+                                SetViewBag(order.Status);
+                                ModelState.AddModelError("", "Không đủ số lượng để đặt");
+                                return View(order);
+     
+
+                            }
+                        }
+                        catch { }
+                    }
+
+                }
+
+                if (order.Status == 4)
+                {
+                    foreach (var item in db.OrderDetails.Where(x => x.OrderID == order.ID))
+                    {
+                        try
+                        {
+
+                            var product = db.Products.Find(item.ProductID);
+                            product.Quantity = product.Quantity - item.Quantity;
+                            db.SaveChanges();
+                            
+                                                         
+                        }
+                        catch { }
+                    }
+
+                }
 
 
                 var result = dao.Update(order);
@@ -99,14 +155,18 @@ namespace OnlineShop.Areas.Admin.Controllers
                 }
             }
             SetViewBag(order.Status);
-            return View("Index");
+            return View(order);
         }
-        [HttpDelete]
+     
         public ActionResult Delete(int id)
         {
-            new OrderDao().Delete(id);
+         var db=   new OnlineShopDbContext();
+            var order = db.OrderDetails.Find(id);
+            db.OrderDetails.Remove(order);
+            db.SaveChanges();
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Edit/"+order.OrderID);
+
         }
 
         [HttpPost]

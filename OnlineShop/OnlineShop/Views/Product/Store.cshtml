@@ -7,6 +7,7 @@
     var listsearchprice = (List<Model.ViewModel.ProductViewModel>)ViewBag.SearchPrice;
 
 }
+@using Model.Dao;
 <!-- SECTION -->
 <div class="section">
     <!-- container -->
@@ -84,11 +85,17 @@
                                 <div class="product-img">
                                     <a href="@url"><img src="@item.Image" width="262" height="170" alt="@item.Name"></a>
                                 </div>
-                                <div class="product-body" style="height:150px">
+                                <div class="product-body" style="height:200px">
                                     <h5 class="product-name"><a href="#">@item.Name</a></h5>
                                     <h5 class="product-price" style="text-decoration: line-through">@(item.Price.HasValue?item.Price.Value.ToString("N0"):"Liên hệ")</h5>
                                     <h5 class="product-price">@(item.PromotionPrice.HasValue?item.PromotionPrice.Value.ToString("N0"):"Liên hệ")</h5>
                                     <h5>@(item.Status? "Còn hàng":"Hết hàng")</h5>
+                                    <div class="product-rating">
+                                        @for (int i = 0; i < (new RatingDao().SumStar(item.ID)); i++)
+                                        {
+                                            <i class="fa fa-star"></i>
+                                        }
+                                    </div>
                                 </div>
                                 <div class="add-to-cart" style="width:260px">
                                     <h4 class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i><a href="/them-gio-hang?productId=@item.ID&quantity=1">Thêm vào giỏ hàng</a></h4>
@@ -101,10 +108,16 @@
                                 <div class="product-img">
                                     <a href="@url"><img src="@item.Image" width="262" height="170" alt="@item.Name"></a>
                                 </div>
-                                <div class="product-body" style="height:150px">
+                                <div class="product-body" style="height:200px">
                                     <h5 class="product-name"><a href="#">@item.Name</a></h5>
                                     <h5 class="product-price">@(item.Price.HasValue?item.Price.Value.ToString("N0"):"Liên hệ")</h5>
                                     <h5>@(item.Status? "Còn hàng":"Hết hàng")</h5>
+                                    <div class="product-rating">
+                                        @for (int i = 0; i < (new RatingDao().SumStar(item.ID)); i++)
+                                        {
+                                            <i class="fa fa-star"></i>
+                                        }
+                                    </div>
                                 </div>
                                 <div class="add-to-cart" style="width:260px">
                                     <h4 class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i><a href="/them-gio-hang?productId=@item.ID&quantity=1">Thêm vào giỏ hàng</a></h4>
